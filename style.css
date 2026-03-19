@@ -246,9 +246,6 @@ h1, h2, h3, .font-display {
 }
 .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 
-/* ── Entry delete button (Tailwind CDN group-hover workaround) ── */
-.group:hover .group-hover\:opacity-100 { opacity: 1; }
-
 @media (max-width: 640px) {
   .hide-mobile { display: none !important; }
   .lb-name { max-width: 120px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
@@ -258,12 +255,6 @@ h1, h2, h3, .font-display {
   thead th {
     padding-left: 0.5rem !important;
     padding-right: 0.5rem !important;
-  }
-
-  /* Make delete button visible on mobile (no hover) */
-  .group .group-hover\:opacity-100 {
-    opacity: 1 !important;
-    color: #f87171; /* red-400 */
   }
 
   /* Bring hours closer to name on mobile */

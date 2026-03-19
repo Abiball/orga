@@ -270,8 +270,7 @@ function renderRecent() {
         <span class="font-display font-bold text-white text-sm shrink-0">${fmtH(e.hours)}</span>
         <button
           onclick="event.stopPropagation(); confirmDelete(${e.id})"
-          class="shrink-0 opacity-0 group-hover:opacity-100 focus:opacity-100 transition-opacity
-                 text-slate-600 hover:text-red-400 text-lg leading-none ml-1"
+          class="shrink-0 text-red-400/60 hover:text-red-400 text-lg leading-none ml-2 transition-colors"
           title="Eintrag löschen"
         >×</button>
       </div>`;
