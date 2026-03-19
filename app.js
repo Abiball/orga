@@ -194,7 +194,7 @@ function renderDashboard() {
   rb.textContent = rank || "–";
   rb.className   = "rank-badge " + (rank === 1 ? "rank-1" : rank === 2 ? "rank-2" : rank === 3 ? "rank-3" : "rank-other");
   document.getElementById("myRankText").textContent = rank
-    ? `Platz ${rank} von ${users.filter(u => u.totalHours > 0).length || 1}`
+    ? `Platz ${rank} von 42`
     : "Noch kein Eintrag";
 
   // Category breakdown bars
