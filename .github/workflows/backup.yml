@@ -2,7 +2,7 @@ name: Nightly CSV Backup
 
 on:
   schedule:
-    - cron: '0 22 * * *'   # jeden Abend 22:00 UTC = 23:00 MEZ / 00:00 MESZ
+    - cron: '0 11,22 * * *'   # jeden Mittag um 11:00 Uhr und jeden Abend um 22:00 Uhr (UTC)
   workflow_dispatch:         # auch manuell auslösbar über GitHub UI
 
 jobs:
