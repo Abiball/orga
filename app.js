@@ -20,28 +20,28 @@ const HOUR_GOAL = 500;
 /* ── MOTIVATION TEXTS ───────────────────────────────────── */
 const motivations = {
   none: [
-    "Trag deinen ersten Eintrag ein – der Abiball wartet!",
-    "Jede große Sache fängt klein an. Los geht's!"
+    "Bisher keine Einträge vorhanden.",
+    "Warten auf erste Dateneingabe."
   ],
   low: [
-    "Gut, du bist dabei! Weiter so.",
-    "Schon was beigetragen – das zählt.",
-    "Der Anfang ist gemacht!"
+    "Erste Beiträge erfasst.",
+    "Mindestmaß erreicht.",
+    "Aktivität registriert."
   ],
   mid: [
-    "Solides Engagement, du hältst die Mitte.",
-    "Du bist definitiv kein Trittbrettfahrer.",
-    "Gutes Mittelfeld – noch Luft nach oben!"
+    "Durchschnittliches Engagement.",
+    "Regelmäßige Beteiligung vorhanden.",
+    "Status: Aktiv."
   ],
   high: [
-    "Top-Drittel! Respekt, du machst das echt.",
-    "Ohne Leute wie dich läuft hier gar nichts.",
-    "Die anderen können sich was abschauen."
+    "Hohe Beteiligungsrate.",
+    "Überdurchschnittlicher Einsatz.",
+    "Wesentlicher Beitrag zum Projektfortschritt."
   ],
   top: [
-    "Absolute Spitze. Der Abiball trägt deinen Stempel.",
-    "MVP-Energie. Wir schulden dir mindestens einen Tanz.",
-    "Legendenstatus erreicht. Du bist der Grund, dass das klappt."
+    "Maximale Aktivität erreicht.",
+    "Kernorganisation abgeschlossen.",
+    "Leistungsträger-Status."
   ]
 };
 
@@ -110,6 +110,12 @@ async function deleteEntry(id) {
 
 /* ── AUTH ───────────────────────────────────────────────── */
 
+function updateUserDisplay(name) {
+  document.querySelectorAll(".currentUserDisplay").forEach(el => {
+    el.textContent = name;
+  });
+}
+
 function handleLogin() {
   const name = document.getElementById("loginName").value.trim();
   const pw   = document.getElementById("loginPw").value;
@@ -119,6 +125,7 @@ function handleLogin() {
   }
   currentUser = name;
   sessionStorage.setItem("abiball_user", name);
+  updateUserDisplay(name);
   document.getElementById("loginOverlay").classList.remove("open");
   document.getElementById("app").classList.remove("hidden");
   document.getElementById("fabBtn").classList.remove("hidden");
@@ -264,7 +271,7 @@ function renderLeaderboard() {
     const tc        = topCat(u.cats);
     const rankClass = rank === 1 ? "rank-1" : rank === 2 ? "rank-2" : rank === 3 ? "rank-3" : "rank-other";
     tbody.innerHTML += `
-      <tr class="lb-row ${isMe ? "bg-indigo-500/5" : ""}">
+      <tr class="lb-row ${isMe ? "bg-indigo-500/5" : ""} cursor-pointer hover:bg-slate-800/30 transition-colors" onclick="openUserModal('${u.name}')">
         <td class="px-4 py-3">
           <div class="rank-badge ${rankClass}">${rank}</div>
         </td>
@@ -301,7 +308,7 @@ function renderRecent() {
         </div>
         <span class="font-display font-bold text-white text-sm shrink-0">${fmtH(e.hours)}</span>
         <button
-          onclick="confirmDelete(${e.id})"
+          onclick="event.stopPropagation(); confirmDelete(${e.id})"
           class="shrink-0 opacity-0 group-hover:opacity-100 focus:opacity-100 transition-opacity
                  text-slate-600 hover:text-red-400 text-lg leading-none ml-1"
           title="Eintrag löschen"
@@ -324,6 +331,43 @@ async function confirmDelete(id) {
 
 function openModal() {
   document.getElementById("trackModal").classList.add("open");
+}
+
+function openUserModal(name) {
+  const modal = document.getElementById("userModal");
+  const title = document.getElementById("userModalTitle");
+  const stats = document.getElementById("userModalStats");
+  const body  = document.getElementById("userEntriesBody");
+
+  const entries = allEntries.filter(e => e.name === name);
+  const total   = entries.reduce((s, e) => s + e.hours, 0);
+
+  title.textContent = `Einträge von ${name}`;
+  stats.textContent = `${fmtH(total)} gesamt · ${entries.length} Einträge`;
+
+  if (entries.length === 0) {
+    body.innerHTML = '<tr><td colspan="4" class="py-8 text-center text-slate-500">Noch keine Einträge vorhanden.</td></tr>';
+  } else {
+    body.innerHTML = entries.map(e => {
+      const d = new Date(e.created_at);
+      const dateStr = d.toLocaleDateString("de-DE", { day: "2-digit", month: "2-digit", year: "2-digit" });
+      return `
+        <tr class="border-b border-slate-800/30 hover:bg-slate-800/20">
+          <td class="py-3 px-2 text-slate-400 whitespace-nowrap">${dateStr}</td>
+          <td class="py-3 px-2">
+            <span class="cat-pill cat-${catSlug(e.category)} scale-90 origin-left">${e.category}</span>
+          </td>
+          <td class="py-3 px-2 text-right font-display font-bold text-slate-200">${fmtH(e.hours)}</td>
+          <td class="py-3 px-2 hide-mobile text-slate-500 max-w-[150px] truncate" title="${e.note}">${e.note || "–"}</td>
+        </tr>`;
+    }).join("");
+  }
+
+  modal.classList.add("open");
+}
+
+function closeUserModal() {
+  document.getElementById("userModal").classList.remove("open");
 }
 
 function toggleCustomCategory(val) {
@@ -375,18 +419,23 @@ async function submitEntry() {
 /* ── CSV EXPORT ─────────────────────────────────────────── */
 
 function exportCSV() {
-  const users = aggregateByUser();
-  const rows  = [["Platz", "Name", "Gesamtstunden", "Top Kategorie", "Einträge"]];
-  users.forEach((u, i) => {
-    const tc = topCat(u.cats);
-    rows.push([i + 1, u.name, u.totalHours.toFixed(2), tc.cat || "–", u.entries]);
+  // Jetzt werden ALLE Einträge exportiert
+  const rows = [["Datum", "Name", "Kategorie", "Stunden", "Notiz"]];
+
+  // Sortiert nach Datum absteigend
+  const sorted = [...allEntries].sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+
+  sorted.forEach(e => {
+    const d = new Date(e.created_at).toISOString().slice(0, 10);
+    rows.push([d, e.name, e.category, e.hours.toFixed(2), (e.note || "").replace(/;/g, ",")]);
   });
+
   const csv = rows.map(r => r.join(";")).join("\n");
   const a   = document.createElement("a");
   a.href    = "data:text/csv;charset=utf-8,\uFEFF" + encodeURIComponent(csv);
-  a.download = `abiball_tracker_${new Date().toISOString().slice(0, 10)}.csv`;
+  a.download = `abiball_alle_eintraege_${new Date().toISOString().slice(0, 10)}.csv`;
   a.click();
-  showToast("CSV exportiert!");
+  showToast("CSV exportiert (Alle Einträge)!");
 }
 
 /* ── TOAST ──────────────────────────────────────────────── */
@@ -406,6 +455,7 @@ populateLoginNames();
 const savedUser = sessionStorage.getItem("abiball_user");
 if (savedUser) {
   currentUser = savedUser;
+  updateUserDisplay(savedUser);
   document.getElementById("loginOverlay").classList.remove("open");
   document.getElementById("app").classList.remove("hidden");
   document.getElementById("fabBtn").classList.remove("hidden");
@@ -415,6 +465,9 @@ if (savedUser) {
 // Modal schließen bei Klick auf Overlay-Hintergrund
 document.getElementById("trackModal").addEventListener("click", function (e) {
   if (e.target === this) closeModal();
+});
+document.getElementById("userModal").addEventListener("click", function (e) {
+  if (e.target === this) closeUserModal();
 });
 
 // Enter im Passwort-Feld → Login
