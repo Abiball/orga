@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="de" class="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Abiball '27 Tracker</title>
+
+  <!-- Tailwind CSS (CDN) -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
+
+  <!-- Custom Styles -->
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+<!-- Background layers -->
+<div class="bg-mesh"></div>
+<div class="noise"></div>
+
+<!-- ═══════════════════════════════════════════════════════
+     LOGIN OVERLAY
+════════════════════════════════════════════════════════ -->
+<div id="loginOverlay" class="modal-overlay open" style="z-index:999;">
+  <div class="modal-box p-8" style="max-width:400px;">
+    <div class="text-center mb-8">
+      <div class="text-4xl mb-3">🎓</div>
+      <h1 class="font-display text-2xl font-bold grad-text">Abiball '27</h1>
+      <p class="text-slate-400 text-sm mt-1">Organisation &amp; Stunden-Tracker</p>
+    </div>
+
+    <div class="space-y-4">
+      <div>
+        <label class="text-xs text-slate-400 uppercase tracking-widest mb-2 block">Dein Name</label>
+        <select id="loginName" class="inp">
+          <option value="">– Wähle deinen Namen –</option>
+        </select>
+      </div>
+
+      <div>
+        <label class="text-xs text-slate-400 uppercase tracking-widest mb-2 block">Klassenpasswort</label>
+        <input id="loginPw" type="password" class="inp" placeholder="••••••••" />
+      </div>
+
+      <p id="loginErr" class="text-red-400 text-sm hidden">
+        Falsches Passwort oder kein Name gewählt.
+      </p>
+
+      <button onclick="handleLogin()" class="btn-primary w-full mt-2">Einloggen</button>
+    </div>
+
+    <p class="text-center text-xs text-slate-600 mt-6">
+      Nur für die Abiball-Orga 2027 · Vertrauensbasis
+    </p>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════
+     MAIN APP
+════════════════════════════════════════════════════════ -->
+<div id="app" class="relative z-10 hidden min-h-screen pb-32">
+
+  <!-- Header -->
+  <header class="glass sticky top-0 z-30 px-4 py-3">
+    <div class="max-w-4xl mx-auto flex items-center justify-between gap-4">
+      <div>
+        <h1 class="font-display text-lg sm:text-xl font-bold grad-text leading-tight">Abiball '27 Orga</h1>
+        <p class="text-xs text-slate-500 hidden sm:block">Stunden-Tracker</p>
+      </div>
+
+      <!-- Global progress (desktop) -->
+      <div class="flex-1 max-w-xs hidden sm:block">
+        <div class="flex justify-between text-xs text-slate-400 mb-1">
+          <span>Gesamt-Stunden der Stufe</span>
+          <span id="totalHoursLabel">0h</span>
+        </div>
+        <div class="progress-track h-2">
+          <div class="progress-fill h-2" id="globalProgressBar" style="width:0%"></div>
+        </div>
+      </div>
+
+      <button onclick="handleLogout()" class="text-slate-500 hover:text-slate-300 text-xs transition-colors">
+        Logout
+      </button>
+    </div>
+  </header>
+
+  <!-- Global progress (mobile) -->
+  <div class="sm:hidden px-4 pt-4">
+    <div class="flex justify-between text-xs text-slate-400 mb-1">
+      <span>Gesamt-Stunden der Stufe</span>
+      <span id="totalHoursLabelMobile">0h</span>
+    </div>
+    <div class="progress-track h-1.5">
+      <div class="progress-fill h-1.5" id="globalProgressBarMobile" style="width:0%"></div>
+    </div>
+  </div>
+
+  <main class="max-w-4xl mx-auto px-4 pt-6 space-y-6">
+
+    <!-- ── User Dashboard ── -->
+    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 fade-up">
+
+      <!-- Big Hours card -->
+      <div class="glass-card p-6 sm:col-span-1 flex flex-col justify-between">
+        <p class="text-xs text-slate-400 uppercase tracking-widest">Deine Stunden</p>
+        <div class="my-4">
+          <span id="myHoursDisplay" class="font-display text-6xl font-bold grad-text">0</span>
+          <span class="text-slate-400 text-lg ml-1">h</span>
+        </div>
+        <p id="motivationText" class="text-sm text-slate-300 leading-relaxed italic"></p>
+      </div>
+
+      <!-- Stats grid -->
+      <div class="sm:col-span-2 grid grid-cols-2 gap-4">
+        <div class="glass-card p-5">
+          <p class="text-xs text-slate-400 uppercase tracking-widest mb-2">Top Kategorie</p>
+          <p id="myTopCat" class="font-display text-xl font-bold text-white">–</p>
+          <p id="myTopCatHours" class="text-sm text-slate-500 mt-1">0h investiert</p>
+        </div>
+        <div class="glass-card p-5">
+          <p class="text-xs text-slate-400 uppercase tracking-widest mb-2">Einträge</p>
+          <p id="myEntryCount" class="font-display text-4xl font-bold text-white">0</p>
+          <p class="text-sm text-slate-500 mt-1">Aktionen geloggt</p>
+        </div>
+        <div class="glass-card p-5 col-span-2">
+          <p class="text-xs text-slate-400 uppercase tracking-widest mb-2">Dein Rang</p>
+          <div class="flex items-center gap-3">
+            <div id="myRankBadge" class="rank-badge rank-other">–</div>
+            <span id="myRankText" class="font-display text-lg font-bold text-white">Noch kein Eintrag</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Category Breakdown ── -->
+    <div class="glass-card p-6 fade-up delay-1">
+      <h2 class="font-display text-base font-bold text-slate-200 mb-4">Meine Kategorien</h2>
+      <div id="catBreakdown" class="space-y-3"></div>
+    </div>
+
+    <!-- ── Leaderboard ── -->
+    <div class="glass-card fade-up delay-2">
+      <div class="flex items-center justify-between px-6 pt-6 pb-4 border-b border-slate-800">
+        <h2 class="font-display text-base font-bold text-slate-200">🏆 Leaderboard</h2>
+        <button onclick="exportCSV()" class="btn-ghost text-xs py-2 px-3">⬇ CSV Export</button>
+      </div>
+      <div class="scroll-x">
+        <table class="w-full min-w-[520px] text-sm">
+          <thead>
+            <tr class="text-xs text-slate-500 uppercase tracking-widest">
+              <th class="px-4 py-3 text-left w-12">#</th>
+              <th class="px-4 py-3 text-left">Name</th>
+              <th class="px-4 py-3 text-right">Stunden</th>
+              <th class="px-4 py-3 text-left hide-mobile">Top Kategorie</th>
+              <th class="px-4 py-3 text-right hide-mobile">Einträge</th>
+            </tr>
+          </thead>
+          <tbody id="leaderboardBody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ── Recent Entries ── -->
+    <div class="glass-card p-6 fade-up delay-3">
+      <h2 class="font-display text-base font-bold text-slate-200 mb-4">Meine letzten Einträge</h2>
+      <div id="recentEntries" class="space-y-2"></div>
+    </div>
+
+  </main>
+</div><!-- /#app -->
+
+<!-- Floating Action Button -->
+<button class="fab hidden" id="fabBtn" onclick="openModal()" title="Stunden eintragen">+</button>
+
+<!-- Toast notification -->
+<div class="toast" id="toast"></div>
+
+<!-- ═══════════════════════════════════════════════════════
+     TRACKING MODAL
+════════════════════════════════════════════════════════ -->
+<div class="modal-overlay" id="trackModal">
+  <div class="modal-box p-6">
+    <div class="flex items-center justify-between mb-6">
+      <h2 class="font-display text-xl font-bold text-white">Stunden eintragen</h2>
+      <button onclick="closeModal()" class="text-slate-500 hover:text-white transition-colors text-2xl leading-none">&times;</button>
+    </div>
+
+    <div class="space-y-4">
+      <div class="grid grid-cols-2 gap-3">
+        <div>
+          <label class="text-xs text-slate-400 uppercase tracking-widest mb-2 block">Stunden</label>
+          <input id="inputHours" type="number" min="0" max="24" class="inp" placeholder="0" />
+        </div>
+        <div>
+          <label class="text-xs text-slate-400 uppercase tracking-widest mb-2 block">Minuten</label>
+          <input id="inputMinutes" type="number" min="0" max="59" class="inp" placeholder="0" />
+        </div>
+      </div>
+
+      <div>
+        <label class="text-xs text-slate-400 uppercase tracking-widest mb-2 block">Kategorie</label>
+        <select id="inputCategory" class="inp">
+          <option value="">– Kategorie wählen –</option>
+          <option>Deko</option>
+          <option>Sponsoring</option>
+          <option>Finanzen</option>
+          <option>Programm</option>
+          <option>Logistik</option>
+          <option>Schülerkonzert</option>
+        </select>
+      </div>
+
+      <div>
+        <label class="text-xs text-slate-400 uppercase tracking-widest mb-2 block">Was hast du gemacht?</label>
+        <textarea id="inputNote" class="inp" rows="3"
+          placeholder="z.B. Location-Besichtigung, Angebote eingeholt..."></textarea>
+      </div>
+
+      <div class="flex gap-3 pt-2">
+        <button onclick="closeModal()" class="btn-ghost flex-1">Abbrechen</button>
+        <button onclick="submitEntry()" class="btn-primary flex-1">Eintragen ✓</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- App Logic -->
+<script src="app.js"></script>
+
+</body>
+</html>
