@@ -1,0 +1,47 @@
+name: Nightly CSV Backup
+
+on:
+  schedule:
+    - cron: '0 22 * * *'   # jeden Abend 22:00 UTC = 23:00 MEZ / 00:00 MESZ
+  workflow_dispatch:         # auch manuell auslösbar über GitHub UI
+
+jobs:
+  backup:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Repo auschecken
+        uses: actions/checkout@v4
+
+      - name: Einträge von Supabase holen & CSV erstellen
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_KEY: ${{ secrets.SUPABASE_KEY }}
+        run: |
+          curl -s \
+            -H "apikey: $SUPABASE_KEY" \
+            -H "Authorization: Bearer $SUPABASE_KEY" \
+            "$SUPABASE_URL/rest/v1/entries?select=*&order=created_at.desc" \
+            -o raw.json
+
+          python3 - <<'EOF'
+          import json, csv
+
+          with open("raw.json") as f:
+              entries = json.load(f)
+
+          with open("backup/abiball_backup.csv", "w", newline="", encoding="utf-8-sig") as f:
+              writer = csv.DictWriter(f, fieldnames=["id","name","hours","category","note","created_at"], delimiter=";")
+              writer.writeheader()
+              writer.writerows(entries)
+
+          print(f"Backup erstellt: {len(entries)} Einträge")
+          EOF
+
+      - name: CSV ins Repo committen
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add backup/abiball_backup.csv
+          git diff --staged --quiet || git commit -m "chore: nightly backup $(date +'%Y-%m-%d')"
+          git push

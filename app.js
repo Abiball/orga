@@ -8,6 +8,7 @@ const CLASS_PASSWORD = "abiball2027"; // ← Klassenpasswort ändern
 const MEMBERS = ["Adele", "Alexander", "Annika", "Carl", "Casey", "Cian", "Clemens", "Daniel", "Emilio", "Felix", "Finlay", "Florentine", "Hanna", "Hannah", "Heidi", "Henriette", "Ida", "Jessica", "Jonas", "Jonatan", "Josefine", "Julia", "Lara", "Laura", "Lena M.", "Lena W.", "Leon", "Leonie", "Luisa", "Luise P.", "Luise R.", "Mark", "Miriam", "Mya", "Nathalie", "Nele", "Paul", "Ruslan", "Salomon", "Tobias", "Vasyl", "Vienna"];
   // ← Namen der Klasse anpassen
 
+
 /* ── SUPABASE CONFIG ────────────────────────────────────── */
 const SUPABASE_URL = "https://wjmvineibznokelncndm.supabase.co"; // ← ersetzen
 const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndqbXZpbmVpYnpub2tlbG5jbmRtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM5MzcyMzYsImV4cCI6MjA4OTUxMzIzNn0.7wZiQOk93wTS3pSo-0y3Pr9s5D9LeR3fDWrjzlpmi-A";                    // ← ersetzen
@@ -186,7 +187,14 @@ function fmtH(h) {
   return mins > 0 ? `${whole}h ${mins}m` : `${whole}h`;
 }
 
+function catSlug(c) {
+  if (!c) return "default";
+  return c.toString().replace(/\s+/g, "-").toLowerCase();
+}
+
 /* ── RENDER ─────────────────────────────────────────────── */
+
+const DEFAULT_CATS = ["Deko", "Abimotto - Abizeitung", "Finanzen", "Mottowoche", "Sponsoren", "Schülerkonzert", "Abiball", "Verkauf"];
 
 function renderDashboard() {
   const users = aggregateByUser();
@@ -216,7 +224,7 @@ function renderDashboard() {
   rb.textContent = rank || "–";
   rb.className   = "rank-badge " + (rank === 1 ? "rank-1" : rank === 2 ? "rank-2" : rank === 3 ? "rank-3" : "rank-other");
   document.getElementById("myRankText").textContent = rank
-    ? `Platz ${rank} von ${users.filter(u => u.totalHours > 0).length || 1}`
+    ? `Platz ${rank} von ${users.length}`
     : "Noch kein Eintrag";
 
   // Motivation
@@ -225,16 +233,19 @@ function renderDashboard() {
   document.getElementById("motivationText").textContent = getMotivation(myRankAmongActive, active.length);
 
   // Category breakdown bars
-  const CATS = ["Deko", "Sponsoring", "Finanzen", "Programm", "Logistik", "Schülerkonzert"];
+  // Show default categories + any custom ones the user has actually used
+  const usedCustomCats = Object.keys(me.cats).filter(c => !DEFAULT_CATS.includes(c));
+  const displayCats    = [...DEFAULT_CATS, ...usedCustomCats];
+
   const maxH = Math.max(...Object.values(me.cats), 0.01);
   const bd   = document.getElementById("catBreakdown");
   bd.innerHTML = "";
-  CATS.forEach(c => {
+  displayCats.forEach(c => {
     const h = me.cats[c] || 0;
     const p = Math.round((h / maxH) * 100);
     bd.innerHTML += `
       <div class="flex items-center gap-3">
-        <span class="cat-pill cat-${c} w-28 text-center shrink-0">${c}</span>
+        <span class="cat-pill cat-${catSlug(c)} w-28 text-center shrink-0">${c}</span>
         <div class="flex-1 progress-track h-1.5">
           <div class="progress-fill h-1.5" style="width:${h > 0 ? p : 0}%"></div>
         </div>
@@ -263,7 +274,7 @@ function renderLeaderboard() {
         <td class="px-4 py-3 text-right font-display font-bold text-white">${fmtH(u.totalHours)}</td>
         <td class="px-4 py-3 hide-mobile">
           ${tc.cat
-            ? `<span class="cat-pill cat-${tc.cat}">${tc.cat}</span>`
+            ? `<span class="cat-pill cat-${catSlug(tc.cat)}">${tc.cat}</span>`
             : '<span class="text-slate-600">–</span>'}
         </td>
         <td class="px-4 py-3 text-right text-slate-400 hide-mobile">${u.entries}</td>
@@ -283,7 +294,7 @@ function renderRecent() {
     const dateStr = d.toLocaleDateString("de-DE", { day: "2-digit", month: "short" });
     return `
       <div class="flex items-start gap-3 py-2 border-b border-slate-800 last:border-0 group">
-        <span class="cat-pill cat-${e.category} mt-0.5 shrink-0">${e.category}</span>
+        <span class="cat-pill cat-${catSlug(e.category)} mt-0.5 shrink-0">${e.category}</span>
         <div class="flex-1 min-w-0">
           <p class="text-sm text-slate-300 truncate">${e.note || "Kein Kommentar"}</p>
           <p class="text-xs text-slate-600 mt-0.5">${dateStr}</p>
@@ -315,19 +326,34 @@ function openModal() {
   document.getElementById("trackModal").classList.add("open");
 }
 
+function toggleCustomCategory(val) {
+  const wrapper = document.getElementById("customCategoryWrapper");
+  if (val === "custom") {
+    wrapper.style.display = "block";
+  } else {
+    wrapper.style.display = "none";
+  }
+}
+
 function closeModal() {
   document.getElementById("trackModal").classList.remove("open");
   document.getElementById("inputHours").value    = "";
   document.getElementById("inputMinutes").value  = "";
   document.getElementById("inputCategory").value = "";
   document.getElementById("inputNote").value     = "";
+  document.getElementById("inputCustomCategory").value = "";
+  document.getElementById("customCategoryWrapper").style.display = "none";
 }
 
 async function submitEntry() {
   const h    = parseFloat(document.getElementById("inputHours").value)   || 0;
   const m    = parseFloat(document.getElementById("inputMinutes").value) || 0;
-  const cat  = document.getElementById("inputCategory").value;
+  let cat    = document.getElementById("inputCategory").value;
   const note = document.getElementById("inputNote").value.trim();
+
+  if (cat === "custom") {
+    cat = document.getElementById("inputCustomCategory").value.trim();
+  }
 
   if (h === 0 && m === 0) { showToast("Bitte Zeit eingeben.");    return; }
   if (!cat)                { showToast("Bitte Kategorie wählen."); return; }
