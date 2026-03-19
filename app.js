@@ -5,52 +5,8 @@
 /* ── CONFIG – hier anpassen ─────────────────────────────── */
 const CLASS_PASSWORD = "abiball2027"; // ← Klassenpasswort ändern
 
-const MEMBERS = [
-  "Adele",
-  "Alexander",
-  "Annika",
-  "Carl",
-  "Casey",
-  "Cian",
-  "Clemens",
-  "Daniel",
-  "Emilio",
-  "Felix",
-  "Finlay",
-  "Florentine",
-  "Hanna",
-  "Hannah",
-  "Heidi",
-  "Henriette",
-  "Ida",
-  "Jessica",
-  "Jonas",
-  "Jonatan",
-  "Josefine",
-  "Julia",
-  "Lara",
-  "Laura",
-  "Lena M.",
-  "Lena W.",
-  "Leon",
-  "Leonie",
-  "Luisa",
-  "Luise P.",
-  "Luise R.",
-  "Mark",
-  "Miriam",
-  "Mya",
-  "Nathalie",
-  "Nele",
-  "Paul",
-  "Ruslan",
-  "Salomon",
-  "Tobias",
-  "Vasyl",
-  "Vienna"
-];
+const MEMBERS = ["Adele", "Alexander", "Annika", "Carl", "Casey", "Cian", "Clemens", "Daniel", "Emilio", "Felix", "Finlay", "Florentine", "Hanna", "Hannah", "Heidi", "Henriette", "Ida", "Jessica", "Jonas", "Jonatan", "Josefine", "Julia", "Lara", "Laura", "Lena M.", "Lena W.", "Leon", "Leonie", "Luisa", "Luise P.", "Luise R.", "Mark", "Miriam", "Mya", "Nathalie", "Nele", "Paul", "Ruslan", "Salomon", "Tobias", "Vasyl", "Vienna"];
   // ← Namen der Klasse anpassen
-];
 
 /* ── SUPABASE CONFIG ────────────────────────────────────── */
 const SUPABASE_URL = "https://wjmvineibznokelncndm.supabase.co"; // ← ersetzen
