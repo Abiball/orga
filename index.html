@@ -210,6 +210,11 @@
       </div>
 
       <div>
+        <label class="text-xs text-slate-400 uppercase tracking-widest mb-2 block">Datum</label>
+        <input id="inputDate" type="date" class="inp" />
+      </div>
+
+      <div>
         <label class="text-xs text-slate-400 uppercase tracking-widest mb-2 block">Kategorie</label>
         <select id="inputCategory" class="inp" onchange="toggleCustomCategory(this.value)">
           <option value="">– Kategorie wählen –</option>
@@ -227,7 +232,7 @@
 
       <div id="customCategoryWrapper" style="display: none;">
         <label class="text-xs text-slate-400 uppercase tracking-widest mb-2 block">Eigene Kategorie</label>
-        <input id="inputCustomCategory" type="text" class="inp" placeholder="z.B. IT-Support" />
+        <input id="inputCustomCategory" type="text" class="inp" placeholder="z.B. Planung" />
       </div>
 
       <div>

@@ -289,6 +289,8 @@ async function confirmDelete(id) {
 
 function openModal() {
   document.getElementById("trackModal").classList.add("open");
+  const today = new Date().toISOString().slice(0, 10);
+  document.getElementById("inputDate").value = today;
 }
 
 function openUserModal(name) {
@@ -341,6 +343,7 @@ function closeModal() {
   document.getElementById("trackModal").classList.remove("open");
   document.getElementById("inputHours").value    = "";
   document.getElementById("inputMinutes").value  = "";
+  document.getElementById("inputDate").value     = "";
   document.getElementById("inputCategory").value = "";
   document.getElementById("inputNote").value     = "";
   document.getElementById("inputCustomCategory").value = "";
@@ -350,6 +353,7 @@ function closeModal() {
 async function submitEntry() {
   const h    = parseFloat(document.getElementById("inputHours").value)   || 0;
   const m    = parseFloat(document.getElementById("inputMinutes").value) || 0;
+  const dateVal = document.getElementById("inputDate").value;
   let cat    = document.getElementById("inputCategory").value;
   const note = document.getElementById("inputNote").value.trim();
 
@@ -358,15 +362,20 @@ async function submitEntry() {
   }
 
   if (h === 0 && m === 0) { showToast("Bitte Zeit eingeben.");    return; }
+  if (!dateVal)            { showToast("Bitte Datum wählen.");    return; }
   if (!cat)                { showToast("Bitte Kategorie wählen."); return; }
 
   const totalH = h + m / 60;
+  const entryDate = new Date(dateVal);
+  const now = new Date();
+  entryDate.setHours(now.getHours(), now.getMinutes(), now.getSeconds());
 
   await pushEntry({
-    name:     currentUser,
-    hours:    Math.round(totalH * 100) / 100,
-    category: cat,
-    note:     note || ""
+    name:       currentUser,
+    hours:      Math.round(totalH * 100) / 100,
+    category:   cat,
+    note:       note || "",
+    created_at: entryDate.toISOString()
   });
 
   closeModal();
