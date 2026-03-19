@@ -233,10 +233,10 @@ function renderLeaderboard() {
         <td class="px-4 py-3">
           <div class="rank-badge ${rankClass}">${rank}</div>
         </td>
-        <td class="px-4 py-3">
+        <td class="px-4 py-3 lb-name-col">
           <span class="lb-name font-medium ${isMe ? "grad-text" : "text-slate-200"}">${u.name}${isMe ? " (du)" : ""}</span>
         </td>
-        <td class="px-4 py-3 text-right font-display font-bold text-white">${fmtH(u.totalHours)}</td>
+        <td class="px-4 py-3 text-right font-display font-bold text-white lb-hours">${fmtH(u.totalHours)}</td>
         <td class="px-4 py-3 hide-mobile">
           ${tc.cat
             ? `<span class="cat-pill cat-${catSlug(tc.cat)}">${tc.cat}</span>`
@@ -262,7 +262,10 @@ function renderRecent() {
         <span class="cat-pill cat-${catSlug(e.category)} mt-0.5 shrink-0">${e.category}</span>
         <div class="flex-1 min-w-0">
           <p class="text-sm text-slate-300 truncate">${e.note || "Kein Kommentar"}</p>
-          <p class="text-xs text-slate-600 mt-0.5">${dateStr}</p>
+          <p class="text-xs text-slate-600 mt-0.5">
+            <span class="date-text">${dateStr}</span>
+            <span class="date-icon" title="${dateStr}">📅</span>
+          </p>
         </div>
         <span class="font-display font-bold text-white text-sm shrink-0">${fmtH(e.hours)}</span>
         <button
@@ -313,7 +316,10 @@ function openUserModal(name) {
       const dateStr = d.toLocaleDateString("de-DE", { day: "2-digit", month: "2-digit", year: "2-digit" });
       return `
         <tr class="border-b border-slate-800/30 hover:bg-slate-800/20">
-          <td class="py-3 px-2 text-slate-400 whitespace-nowrap">${dateStr}</td>
+          <td class="py-3 px-2 text-slate-400 whitespace-nowrap">
+            <span class="date-text">${dateStr}</span>
+            <span class="date-icon" title="${dateStr}">📅</span>
+          </td>
           <td class="py-3 px-2">
             <span class="cat-pill cat-${catSlug(e.category)} scale-90 origin-left">${e.category}</span>
           </td>

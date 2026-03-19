@@ -251,5 +251,31 @@ h1, h2, h3, .font-display {
 
 @media (max-width: 640px) {
   .hide-mobile { display: none !important; }
-  .lb-name { max-width: 100px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .lb-name { max-width: 120px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  
+  /* Leaderboard padding reduction */
+  #leaderboardBody td, 
+  thead th {
+    padding-left: 0.5rem !important;
+    padding-right: 0.5rem !important;
+  }
+
+  /* Make delete button visible on mobile (no hover) */
+  .group .group-hover\:opacity-100 {
+    opacity: 1 !important;
+    color: #f87171; /* red-400 */
+  }
+
+  /* Bring hours closer to name on mobile */
+  .lb-name-col { width: 1% !important; white-space: nowrap; }
+  .lb-hours { text-align: left !important; padding-left: 0.5rem !important; }
+  .lb-hours-head { text-align: left !important; padding-left: 0.5rem !important; }
+
+  /* Compact date for mobile */
+  .date-text { display: none; }
+  .date-icon { display: inline-block; }
+}
+
+@media (min-width: 641px) {
+  .date-icon { display: none; }
 }
