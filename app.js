@@ -17,43 +17,6 @@ const USE_SUPABASE = true; // → auf true setzen wenn bereit
 /* Stunden-Ziel der gesamten Stufe (für Fortschrittsbalken) */
 const HOUR_GOAL = 500;
 
-/* ── MOTIVATION TEXTS ───────────────────────────────────── */
-const motivations = {
-  none: [
-    "Bisher keine Einträge vorhanden.",
-    "Warten auf erste Dateneingabe."
-  ],
-  low: [
-    "Erste Beiträge erfasst.",
-    "Mindestmaß erreicht.",
-    "Aktivität registriert."
-  ],
-  mid: [
-    "Durchschnittliches Engagement.",
-    "Regelmäßige Beteiligung vorhanden.",
-    "Status: Aktiv."
-  ],
-  high: [
-    "Hohe Beteiligungsrate.",
-    "Überdurchschnittlicher Einsatz.",
-    "Wesentlicher Beitrag zum Projektfortschritt."
-  ],
-  top: [
-    "Maximale Aktivität erreicht.",
-    "Kernorganisation abgeschlossen.",
-    "Leistungsträger-Status."
-  ]
-};
-
-function getMotivation(rank, total) {
-  if (total === 0) return pick(motivations.none);
-  const pct = rank / total;
-  if (pct >= 0.9) return pick(motivations.low);
-  if (pct >= 0.6) return pick(motivations.mid);
-  if (pct >= 0.3) return pick(motivations.high);
-  return pick(motivations.top);
-}
-
 function pick(arr) {
   return arr[Math.floor(Math.random() * arr.length)];
 }
@@ -231,13 +194,8 @@ function renderDashboard() {
   rb.textContent = rank || "–";
   rb.className   = "rank-badge " + (rank === 1 ? "rank-1" : rank === 2 ? "rank-2" : rank === 3 ? "rank-3" : "rank-other");
   document.getElementById("myRankText").textContent = rank
-    ? `Platz ${rank} von ${users.length}`
+    ? `Platz ${rank} von ${users.filter(u => u.totalHours > 0).length || 1}`
     : "Noch kein Eintrag";
-
-  // Motivation
-  const active            = users.filter(u => u.totalHours > 0);
-  const myRankAmongActive = active.findIndex(u => u.name === currentUser);
-  document.getElementById("motivationText").textContent = getMotivation(myRankAmongActive, active.length);
 
   // Category breakdown bars
   // Show default categories + any custom ones the user has actually used
