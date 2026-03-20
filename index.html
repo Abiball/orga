@@ -68,18 +68,7 @@
     <div class="max-w-4xl mx-auto flex items-center justify-between gap-4">
       <div>
         <h1 class="font-display text-lg sm:text-xl font-bold grad-text leading-tight">Abiball '27 Orga</h1>
-        <p class="text-xs text-slate-500 hidden sm:block">Stunden-Tracker</p>
-      </div>
-
-      <!-- Global progress (desktop) -->
-      <div class="flex-1 max-w-xs hidden sm:block">
-        <div class="flex justify-between text-xs text-slate-400 mb-1">
-          <span>Gesamt-Stunden der Stufe</span>
-          <span id="totalHoursLabel">0h</span>
-        </div>
-        <div class="progress-track h-2">
-          <div class="progress-fill h-2" id="globalProgressBar" style="width:0%"></div>
-        </div>
+        <p class="text-xs text-slate-500 hidden sm:block">Aktions-Tracker</p>
       </div>
 
       <div class="flex items-center gap-3">
@@ -94,53 +83,21 @@
     </div>
   </header>
 
-  <!-- Global progress (mobile) -->
-  <div class="sm:hidden px-4 pt-4">
-    <div class="flex justify-between text-xs text-slate-400 mb-1">
-      <span>Gesamt-Stunden der Stufe</span>
-      <span id="totalHoursLabelMobile">0h</span>
-    </div>
-    <div class="progress-track h-1.5">
-      <div class="progress-fill h-1.5" id="globalProgressBarMobile" style="width:0%"></div>
-    </div>
-  </div>
-
   <main class="max-w-4xl mx-auto px-4 pt-6 space-y-6">
 
     <!-- ── User Dashboard ── -->
-    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 fade-up">
-
-      <!-- Big Hours card -->
-      <div class="glass-card p-6 sm:col-span-1 flex flex-col justify-between">
-        <div class="flex justify-between items-start">
-          <p class="text-xs text-slate-400 uppercase tracking-widest">Deine Stunden</p>
-          <p class="currentUserDisplay text-[10px] font-bold text-slate-500 uppercase tracking-widest sm:hidden">...</p>
-        </div>
-        <div class="my-4">
-          <span id="myHoursDisplay" class="font-display text-6xl font-bold grad-text">0</span>
-          <span class="text-slate-400 text-lg ml-1">h</span>
-        </div>
-      </div>
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 fade-up">
 
       <!-- Stats grid -->
-      <div class="sm:col-span-2 grid grid-cols-2 gap-4">
-        <div class="glass-card p-5">
-          <p class="text-xs text-slate-400 uppercase tracking-widest mb-2">Top Kategorie</p>
-          <p id="myTopCat" class="font-display text-xl font-bold text-white">–</p>
-          <p id="myTopCatHours" class="text-sm text-slate-500 mt-1">0h investiert</p>
-        </div>
-        <div class="glass-card p-5">
-          <p class="text-xs text-slate-400 uppercase tracking-widest mb-2">Einträge</p>
-          <p id="myEntryCount" class="font-display text-4xl font-bold text-white">0</p>
-          <p class="text-sm text-slate-500 mt-1">Aktionen geloggt</p>
-        </div>
-        <div class="glass-card p-5 col-span-2">
-          <p class="text-xs text-slate-400 uppercase tracking-widest mb-2">Dein Rang</p>
-          <div class="flex items-center gap-3">
-            <div id="myRankBadge" class="rank-badge rank-other">–</div>
-            <span id="myRankText" class="font-display text-lg font-bold text-white">Noch kein Eintrag</span>
-          </div>
-        </div>
+      <div class="glass-card p-5">
+        <p class="text-xs text-slate-400 uppercase tracking-widest mb-2">Top Kategorie</p>
+        <p id="myTopCat" class="font-display text-xl font-bold text-white">–</p>
+        <p id="myTopCatEntries" class="text-sm text-slate-500 mt-1">0 Aktionen geloggt</p>
+      </div>
+      <div class="glass-card p-5">
+        <p class="text-xs text-slate-400 uppercase tracking-widest mb-2">Einträge</p>
+        <p id="myEntryCount" class="font-display text-4xl font-bold text-white">0</p>
+        <p class="text-sm text-slate-500 mt-1">Deine Gesamt-Aktionen</p>
       </div>
     </div>
 
@@ -162,9 +119,8 @@
             <tr class="text-xs text-slate-500 uppercase tracking-widest">
               <th class="px-4 py-3 text-left w-12">#</th>
               <th class="px-4 py-3 text-left lb-name-col">Name</th>
-              <th class="px-4 py-3 text-right lb-hours-head">Stunden</th>
+              <th class="px-4 py-3 text-right">Einträge</th>
               <th class="px-4 py-3 text-left hide-mobile">Top Kategorie</th>
-              <th class="px-4 py-3 text-right hide-mobile">Einträge</th>
             </tr>
           </thead>
           <tbody id="leaderboardBody"></tbody>
@@ -182,7 +138,7 @@
 </div><!-- /#app -->
 
 <!-- Floating Action Button -->
-<button class="fab hidden" id="fabBtn" onclick="openModal()" title="Stunden eintragen">+</button>
+<button class="fab hidden" id="fabBtn" onclick="openModal()" title="Aktion eintragen">+</button>
 
 <!-- Toast notification -->
 <div class="toast" id="toast"></div>
@@ -193,21 +149,12 @@
 <div class="modal-overlay" id="trackModal">
   <div class="modal-box p-6">
     <div class="flex items-center justify-between mb-6">
-      <h2 class="font-display text-xl font-bold text-white">Stunden eintragen</h2>
+      <h2 id="modalTitle" class="font-display text-xl font-bold text-white">Aktion eintragen</h2>
       <button onclick="closeModal()" class="text-slate-500 hover:text-white transition-colors text-2xl leading-none">&times;</button>
     </div>
 
     <div class="space-y-4">
-      <div class="grid grid-cols-2 gap-3">
-        <div>
-          <label class="text-xs text-slate-400 uppercase tracking-widest mb-2 block">Stunden</label>
-          <input id="inputHours" type="number" min="0" max="24" class="inp" placeholder="0" />
-        </div>
-        <div>
-          <label class="text-xs text-slate-400 uppercase tracking-widest mb-2 block">Minuten</label>
-          <input id="inputMinutes" type="number" min="0" max="59" class="inp" placeholder="0" />
-        </div>
-      </div>
+      <input type="hidden" id="editEntryId" value="">
 
       <div>
         <label class="text-xs text-slate-400 uppercase tracking-widest mb-2 block">Datum</label>
@@ -243,7 +190,7 @@
 
       <div class="flex gap-3 pt-2">
         <button onclick="closeModal()" class="btn-ghost flex-1">Abbrechen</button>
-        <button onclick="submitEntry()" class="btn-primary flex-1">Eintragen ✓</button>
+        <button id="submitBtn" onclick="submitEntry()" class="btn-primary flex-1">Eintragen ✓</button>
       </div>
     </div>
   </div>
@@ -255,7 +202,7 @@
       <div class="flex justify-between items-start mb-4">
         <div>
           <h2 id="userModalTitle" class="font-display text-2xl font-bold grad-text truncate pr-4">Details</h2>
-          <p id="userModalStats" class="text-xs text-slate-400 uppercase tracking-widest mt-1 font-semibold">0 Stunden gesamt</p>
+          <p id="userModalStats" class="text-xs text-slate-400 uppercase tracking-widest mt-1 font-semibold">0 Einträge gesamt</p>
         </div>
         <button onclick="closeUserModal()" class="text-slate-500 hover:text-white transition-colors p-1 text-2xl leading-none">&times;</button>
       </div>
@@ -266,7 +213,6 @@
             <tr class="text-[10px] text-slate-500 uppercase tracking-widest border-b border-slate-800">
               <th class="py-3 px-2 font-bold">Datum</th>
               <th class="py-3 px-2 font-bold">Kategorie</th>
-              <th class="py-3 px-2 text-right font-bold">H</th>
               <th class="py-3 px-2 hide-mobile font-bold">Notiz</th>
             </tr>
           </thead>

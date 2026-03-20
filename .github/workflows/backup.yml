@@ -31,7 +31,7 @@ jobs:
               entries = json.load(f)
 
           with open("backup/abiball_backup.csv", "w", newline="", encoding="utf-8-sig") as f:
-              writer = csv.DictWriter(f, fieldnames=["id","name","hours","category","note","created_at"], delimiter=";")
+              writer = csv.DictWriter(f, fieldnames=["id","name","category","note","created_at"], delimiter=";")
               writer.writeheader()
               writer.writerows(entries)
 
