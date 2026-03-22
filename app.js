@@ -343,7 +343,7 @@ function openUserModal(name) {
           <td class="py-3 px-2">
             <span class="cat-pill cat-${catSlug(e.category)} scale-90 origin-left">${e.category}</span>
           </td>
-          <td class="py-3 px-2 hide-mobile text-slate-500 max-w-[200px] truncate" title="${e.note}">${e.note || "–"}</td>
+          <td class="py-3 px-2 text-slate-500 max-w-[200px] truncate" title="${e.note}">${e.note || "–"}</td>
         </tr>`;
     }).join("");
   }

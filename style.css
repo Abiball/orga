@@ -263,8 +263,8 @@ h1, h2, h3, .font-display {
   .lb-hours-head { text-align: left !important; padding-left: 0.5rem !important; }
 
   /* Compact date for mobile */
-  .date-text { display: none; }
-  .date-icon { display: inline-block; }
+  .date-text { display: inline; }
+  .date-icon { display: none; }
 }
 
 @media (min-width: 641px) {
