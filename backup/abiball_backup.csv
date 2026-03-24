@@ -1,4 +1,8 @@
 ﻿id;name;category;note;created_at
+95;Nathalie;Verkauf;Kuchenbasar;2026-03-24T15:37:01+00:00
+94;Nathalie;Schülerkonzert;Organisatorisches;2026-03-24T15:36:16+00:00
+92;Nele;Schülerkonzert;Mitgesungen, Moderation, zusammen mit Hannah deko;2026-03-24T15:29:25+00:00
+90;Julia;Verkauf;Kuchen gebacken;2026-03-24T15:26:30+00:00
 88;Florentine;Kuchenbasar;;2026-03-23T10:48:00+00:00
 87;Annika;Kuchenbasar;;2026-03-23T10:47:04+00:00
 86;Annika;Schülerkonzert;;2026-03-23T10:45:59+00:00
@@ -14,18 +18,16 @@
 65;Lena W.;Kuchenbasar;;2026-03-20T12:15:38+00:00
 64;Florentine;Schülerkonzert;;2026-03-20T12:14:34+00:00
 62;Lena W.;Schülerkonzert;;2026-03-20T12:13:13+00:00
-52;Nathalie;Schülerkonzert;;2026-03-20T12:09:33+00:00
 51;Laura;Schülerkonzert;;2026-03-20T12:09:27+00:00
 50;Hannah;Schülerkonzert;Organisatorisches;2026-03-20T12:02:56+00:00
 48;Hannah;Schülerkonzert;Proben (Chor und Band);2026-03-20T12:01:37+00:00
 43;Hanna;Verkauf;Kuchen gebacken (Rittergut);2026-03-20T10:54:02+00:00
-38;Nathalie;Verkauf;;2026-03-20T10:39:59+00:00
-35;Nathalie;Schülerkonzert;;2026-03-20T10:39:04+00:00
 32;Julia;Verkauf;Kuchen gebacken und verkauft;2026-03-20T10:38:11+00:00
-33;Nathalie;Schülerkonzert;;2026-03-20T10:38:10+00:00
 36;Hanna;Verkauf;Kuchen backen (Kuchenbasare);2026-03-20T10:06:46+00:00
+91;Leon;Verkauf;Kuchenbasar;2026-03-15T15:29:02+00:00
 78;Luise R.;Schülerkonzert;Gesungen;2026-03-14T19:51:04+00:00
 68;Felix;Schülerkonzert;Generalproben und Konzert;2026-03-14T15:48:05+00:00
+93;Nathalie;Schülerkonzert;Gesungen;2026-03-14T15:35:48+00:00
 77;Mark;Schülerkonzert;Chor+Band;2026-03-14T15:08:03+00:00
 82;Casey;Schülerkonzert;;2026-03-14T13:28:13+00:00
 74;Luisa;Schülerkonzert;;2026-03-14T12:24:42+00:00
